@@ -1,0 +1,278 @@
+---
+title: "Unit 2 Pre Live Session"
+author: "Adeel Qureshi"
+date: "11/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+Use the PlayerBBall.csv dataset to visually represent (summarize) the number of players in each position. 
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+library(tidyverse)
+
+#load file in to R
+PBBall= read.csv('/Users/adeel/Desktop/Data Science/Doing Data Science/MSDS_6306_Doing-Data-Science Github/Unit 2/PlayersBBall.csv')
+
+#summary statistics
+summary(PBBall)
+
+head(PBBall)
+
+#summary players per positions
+PBBall %>% ggplot(aes(x=position))+geom_bar()+ggtitle("Distribution Baseball of Postions")
+
+```
+Use the dataset to visually investigate the distribution of the weight of centers (C) is greater than the distribution of the weight of forwards (F).  
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+#load file in to R
+Ball1= read.csv('/Users/adeel/Desktop/Data Science/Doing Data Science/MSDS_6306_Doing-Data-Science Github/Unit 2/PlayersBBall.csv')
+
+#summary statistics
+summary(Ball1)
+
+head(Ball1)
+
+#distribution of weights of centers(C) vs forwards (F)
+Ball1 %>% ggplot(aes(x = weight, y = position ,color = position)) + geom_point()+ggtitle("Distribution of weights of Centers(C) vs Forwards(F)")
+
+#filter data F&C
+position_filter = c("F","C")
+Ball3 = filter(Ball1, position %in% position_filter)
+head(Ball3)
+
+#filter data F
+position_filter = c("F")
+Ball4 = filter(Ball1, position %in% position_filter)
+head(Ball4)
+
+#filter data C
+position_filter = c("C")
+Ball5 = filter(Ball1, position %in% position_filter)
+head(Ball5)
+
+
+Ball3 %>% ggplot(aes(x = position)) + geom_bar() + ggtitle("Distribution of Class")
+
+#distribution of weights of centers(C) vs forwards (F)
+Ball3 %>% ggplot(aes(x = weight, fill = position)) + geom_histogram(color = "black")+ggtitle("Distribution of weight of Centers(C) vs Forwards(F)") 
+
+#distribution of weight of centers(C)
+Ball5 %>% ggplot(aes(x = weight)) + geom_histogram(fill = "Red", color = "black")+ggtitle("Distribution of weight of Centers(C)")
+
+#distribution of weight of centers(F)
+Ball4 %>% ggplot(aes(x = weight)) + geom_histogram(fill = "Green", color = "black")+ggtitle("Distribution of weight of Forward(F)")
+
+```
+
+Use the dataset to visually investigate if the distribution of the height of centers (C) is greater than the distribution of the height of forwards (F).
+
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+#load file in to R
+Ball1= read.csv('/Users/adeel/Desktop/Data Science/Doing Data Science/MSDS_6306_Doing-Data-Science Github/Unit 2/PlayersBBall.csv')
+
+#summary statistics
+summary(Ball1)
+
+head(Ball1)
+
+#distribution of weights of centers(C) vs forwards (F)
+Ball1 %>% ggplot(aes(x = weight, y = position ,color = position)) + geom_point()+ggtitle("Distribution of weights of Centers(C) vs Forwards(F)")
+
+#filter data F&C
+position_filter = c("F","C")
+Ball3 = filter(Ball1, position %in% position_filter)
+head(Ball3)
+
+#filter data F
+position_filter = c("F")
+Ball4 = filter(Ball1, position %in% position_filter)
+head(Ball4)
+
+#filter data C
+position_filter = c("C")
+Ball5 = filter(Ball1, position %in% position_filter)
+head(Ball5)
+
+#distribution of Height of centers(C) vs forwards (F)
+Ball3 %>% ggplot(mapping = aes(x = height, fill=position)) + geom_bar()+ggtitle("Distribution of Height of Centers(C) vs Forwards(F)") 
+
+#distribution of weights of centers(C) vs forwards (F)
+Ball3 %>% ggplot(aes(x = height, fill = position)) + geom_histogram(color = "black")+ggtitle("Distribution of weight of Centers(C) vs Forwards(F)")
+
+Ball3 %>% ggplot(aes(x = height, y = position,fill = position)) + geom_boxplot(color = "blue")
+
+```
+
+Use the dataset to visually investigate if the distribution of height is different between any of the positions.  
+
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+#load file in to R
+Ball1= read.csv('/Users/adeel/Desktop/Data Science/Doing Data Science/MSDS_6306_Doing-Data-Science Github/Unit 2/PlayersBBall.csv')
+
+#summary statistics
+summary(Ball1)
+
+head(Ball1)
+
+Ball1 %>% ggplot(aes(x = position,y = height,color = position)) + geom_point() + ggtitle("Distribution of Heights of Baseball Players")
+
+```
+Use the dataset to investigate how the player’s height is related to the player’s weight. How does height change as the weight changes?  
+
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+#load file in to R
+Ball1= read.csv('/Users/adeel/Desktop/Data Science/Doing Data Science/MSDS_6306_Doing-Data-Science Github/Unit 2/PlayersBBall.csv')
+
+#summary statistics
+summary(Ball1)
+head(Ball1)
+
+
+Ball1 %>% ggplot(aes(x = height, y = weight, color = "blue"))+ geom_point(mapping = aes(x = weight, y = height, color = position)) +  geom_smooth(mapping = aes(x=weight, y= height, linetype = position)) + ggtitle("Height & Weight Correlation")
+
+```
+
+A historian would like to investigate the claim that the heights of players have increased over the years.  Analyze this claim graphically / visually. 
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+#load file in to R
+Ball1= read.csv('/Users/adeel/Desktop/Data Science/Doing Data Science/MSDS_6306_Doing-Data-Science Github/Unit 2/PlayersBBall.csv')
+
+#summary statistics
+summary(Ball1)
+head(Ball1)
+
+Ball1 %>% ggplot(aes(x = year_start,y = height , xlab = "yea")) + geom_point() + ggtitle("Height changes over the years ")
+
+```
+
+
+
+Create a 3D plot of height vs. weight vs. year and color code the points by position.
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+#load file in to R
+Ball1= read.csv('/Users/adeel/Desktop/Data Science/Doing Data Science/MSDS_6306_Doing-Data-Science Github/Unit 2/PlayersBBall.csv')
+
+#summary statistics
+summary(Ball1)
+head(Ball1)
+
+p <- plot_ly(Ball1, x = ~height, y = ~weight, z = ~year_start, color = ~position) %>%
+   add_markers() %>%
+   layout(scene = list(xaxis = list(title = 'Player Height'),
+                      yaxis = list(title = 'Player Weight'),
+                      zaxis = list(title = 'Year')))
+
+p
+
+```
+Go to this website and use one of the 50 best plots to visualize some aspect of the data and provide at least one insight.  You will present your work in breakout! http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+#load file in to R
+Ball1= read.csv('/Users/adeel/Desktop/Data Science/Doing Data Science/MSDS_6306_Doing-Data-Science Github/Unit 2/PlayersBBall.csv')
+
+#summary statistics
+summary(Ball1)
+head(Ball1)
+
+options(scipen=999)  # turn-off scientific notation like 1e+48
+theme_set(theme_bw())  # pre-set the bw theme.
+data("midwest", package = "ggplot2")
+# midwest <- read.csv("http://goo.gl/G1K41K")  # bkup data source
+
+# Scatterplot
+gg <- ggplot(Ball1, aes(x=weight, y=year_start)) + 
+  geom_point(aes(col=position, size=weight)) + 
+  geom_smooth(method="loess", se=F) + 
+  labs(subtitle="Height & Year", 
+       y="Year", 
+       x="Weight", 
+       title="Scatterplot", 
+       caption = "Source: Baseball Players")
+
+plot(gg)
+```
+
+Visually test the claim that the distribution of incomes increase (mean or median) as the education level rises. 
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+#load file in to R
+Ed_in= read.csv('/Users/adeel/Desktop/Data Science/Doing Data Science/MSDS_6306_Doing-Data-Science Github/Unit 2/Education_Income.csv')
+
+#summary statistics
+summary(Ed_in)
+head(Ed_in)
+summary(Ed_in$Educ)
+Ed_in$classFact = as.factor(Ed_in$Educ)
+summary(Ed_in$classFact)
+
+ggplot(data = Ed_in, aes(x = Educ, y = Income2005, fill=Income2005)) + geom_boxplot() + ggtitle("Boxplot of Education vs Income") + xlab("Education") + ylab("Income")+ geom_boxplot(color = "blue")
+
+
+
+
+
+```
