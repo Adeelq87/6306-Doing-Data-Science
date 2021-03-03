@@ -1,0 +1,133 @@
+---
+title: "Unit 7"
+author: "Adeel Qureshi"
+date: "12/16/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+
+```{r}
+
+library(stringi)
+library(ggplot2)
+library(jsonlite)
+library(class)
+library(caret)
+library(e1071)
+library(tidyverse)
+
+x <- fromJSON('https://public.opendatasoft.com/api/records/1.0/search/?dataset=titanic-passengers&rows=2000&facet=survived&facet=pclass&facet=sex&facet=age&facet=embarked')
+
+#convert JSON lite to dataframe
+x_df <- data.frame(x$records$fields)
+x_df
+
+
+df2 = subset(x_df, select = c(age, pclass, survived))
+df2
+
+df3 <- na.omit(df2)
+str(df3)
+
+model = naiveBayes(survived~., data = df3)
+df = data.frame(age = 30, pclass = 1)
+predict(model,df)#just classification
+predict(model,df, type="raw")
+
+model = naiveBayes(survived~., data = df3)
+df = data.frame(age = 30, pclass = 2)
+predict(model,df)#just classification
+predict(model,df, type="raw")
+
+model = naiveBayes(survived~., data = df3)
+df = data.frame(age = 30, pclass = 3)
+predict(model,df)#just classification
+predict(model,df, type="raw")
+
+#question 2
+titanicClean = df2 %>% filter(!is.na(age) & !is.na(pclass))
+set.seed(4)
+trainIndices = sample(seq(1:length(titanicClean$age)),round(.7*length(titanicClean$age)))
+trainTitanic = titanicClean[trainIndices,]
+testTitanic = titanicClean[-trainIndices,]
+
+Titanic_Testdf = read.csv('/Users/adeel/Desktop/Data Science/Doing Data Science/Homework/Live Assignments Unit 7/titanic_test.csv')
+
+testTitanicKaggleClean = Titanic_Testdf[(!is.na(Titanic_Testdf$pclass) &!is.na(Titanic_Testdf$age)),]
+testTitanicKaggleClean
+
+df2_test = subset(testTitanicKaggleClean, select = c(age, pclass))
+df2_test
+
+#Confusion Matrix
+model = naiveBayes(trainTitanic[,c(1,2)],trainTitanic$survived)
+table(predict(model,testTitanicKaggleClean[,c(1,2)]),testTitanicKaggleClean$survived)
+CM = confusionMatrix(table(predict(model,testTitanicKaggleClean[,c(1,2)]),testTitanicKaggleClean$survived))
+
+classifier = naiveBayes(x = trainTitanic, y=trainTitanic$survived)
+y_pred = predict(classifier, newdata = df2_test)
+
+confusionMatrix(table(y_pred, df2_test[, 2]))
+
+```
+
+```{r}
+
+train <- read.csv("/Users/adeel/Desktop/Data Science/Doing Data Science/Homework/Live Assignments Unit 7/titanic_train.csv")
+
+test <- read.csv("/Users/adeel/Desktop/Data Science/Doing Data Science/Homework/Live Assignments Unit 7/titanic_test.csv")
+
+survive <- read.csv("https://raw.githubusercontent.com/minsuk-heo/kaggle-titanic/master/input/gender_submission.csv")
+
+
+test1 <- cbind(test, Survived = survive$Survived)
+colSums(is.na(train))
+
+train_clean <- train %>%
+    mutate(Age = if_else(is.na(Age), mean(Age, na.rm = TRUE), Age))
+
+colSums(is.na(train_clean))
+
+colSums(is.na(test1))
+
+test_clean <- test1 %>% na.omit()
+
+data_train <- train_clean %>% 
+          select(-c(PassengerId, Name, Ticket, Cabin)) %>% 
+          mutate(Survived = as.factor(Survived),
+           Pclass = as.factor(Pclass),
+           Sex = as.factor(Sex),)
+
+data_test <- test_clean %>% 
+          select(-c(PassengerId, Name, Ticket, Cabin)) %>% 
+          mutate(Survived = as.factor(Survived),
+           Pclass = as.factor(Pclass),
+           Sex = as.factor(Sex),)
+
+set.seed(100)
+data_traind <- downSample(x = data_train[, -1], y = as.factor(data_train[, 1]), yname = "Survived")
+
+model_naive <- naiveBayes(x = data_traind %>% select(-Survived), #prediktor
+                          y = data_traind$Survived, #target
+                          laplace = 1) 
+
+pred_label_naive <- predict(model_naive, data_test, type = "class")
+head(data.frame(actual = data_test$Survived, prediction = pred_label_naive))
+
+mat1 <- confusionMatrix(data = pred_label_naive, reference = data_test$Survived, positive = "1")
+mat1
+
+```
+
+
