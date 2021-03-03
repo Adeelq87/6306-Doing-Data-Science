@@ -1,0 +1,179 @@
+---
+title: "homework 5"
+author: "Adeel Qureshi"
+date: "12/2/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+```{r}
+#install.packages("hrbrthemes")
+library(tidyverse)
+library(ggplot2)
+library(GGally)
+library(dplyr)
+library(hrbrthemes)
+
+#choose file option
+#BBall = read.csv(file.choose(),header = TRUE)
+
+BBall = read.csv("/Users/adeel/Desktop/Data Science/Doing Data Science/Homework/Live Assignments Unit 5/PlayersBBall.csv")
+
+BBall
+
+BBall2 = BBall %>% separate(height, c('feet', 'inches'), "-", convert = TRUE)%>%  mutate(TotalInches = (12 * feet) + inches)
+BBall2
+
+# Represent it
+BBall2 %>%
+  ggplot( aes(x=TotalInches, fill=position)) +
+    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
+    theme_ipsum() +
+    labs(fill="")+ ggtitle("Total Inches for Basketball Players Per Position ")
+
+```
+
+```{r}
+
+yob16 = read.csv("/Users/adeel/Desktop/Data Science/Doing Data Science/Homework/Live Assignments Unit 5/yob2016.txt", sep= ";", header=FALSE)
+
+yob16
+
+names(yob16) <- c("Name", "Sex", "Count")
+
+yob16
+
+summary(yob16)
+str(yob16)
+
+yob16[grep("yyy$", yob16$Name), ]
+
+y2016 <- yob16[-212,]
+#check to make sure the row has been removed
+y2016[210:215,]
+
+```
+
+```{r}
+
+yob15 = read.csv("/Users/adeel/Desktop/Data Science/Doing Data Science/Homework/Live Assignments Unit 5/yob2015.txt", sep= ",", header=FALSE)
+
+yob15
+
+names(yob15) <- c("Name", "Sex", "Count")
+
+yob15
+
+
+tail(yob15, 10)
+
+final <- merge(x = yob16, y = yob15, all = FALSE, by = "Name")
+final <- final[complete.cases(final),]
+
+final
+
+colSums(is.na.data.frame(final))
+
+final$Total <- with(final, Count.x + Count.y)
+head(final, 10)
+
+sum(final$Total)
+
+final <- final[with(final, order(-Total)), ]
+head(final, 10)
+
+Top10Girls <- final[final$Sex.x == 'F',]
+head(Top10Girls, 10)
+
+FinalTop10Girls <- Top10Girls[1:10,]
+row.names(FinalTop10Girls) <- c()
+FinalTop10Girls <- within(FinalTop10Girls, rm("Sex.x", "Count.x", "Sex.y", "Count.y"))
+write.csv(FinalTop10Girls, "/Users/adeel/Desktop/Data Science/Doing Data Science/Homework/Live Assignments Unit 5/FinalTop10F.csv")
+#Check to see if file is in directory
+list.files()
+
+final
+
+final %>% ggplot( aes(x=Sex.x, y=Total)) +
+    geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+    coord_flip() +
+    xlab("") +
+    theme_bw()+ ggtitle("Total Names Per Sex")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(GGally)
+library(hrbrthemes)
+
+
+FIFA_pl = read.csv("/Users/adeel/Desktop/Data Science/Doing Data Science/Homework/Live Assignments Unit 5/FIFA Players.csv")
+
+FIFA_pl
+
+FIFA_pl2 = FIFA_pl %>% separate(Height, c('feet', 'inches'), "'", convert = TRUE)%>%  mutate(TotalInches = (12 * feet) + inches)
+FIFA_pl2
+
+FIFA_pl3 = FIFA_pl2 %>% separate(Weight, c('N_Weight', 'Weight_metric'), "lbs", convert = TRUE)
+FIFA_pl3
+
+FIFA_pf = c("LM","LB")
+FIFA_DS1 = filter(FIFA_pl3, Position %in% FIFA_pf)
+FIFA_DS1
+
+FIFA_DS1 %>% ggpairs(columns = c("TotalInches","N_Weight"),
+                     aes(color = Position),
+                 upper = list(continuous = wrap('cor', size = 5)),
+                 lower = list(combo = wrap("facethist", bins = 30)),
+                 diag = list(continuous = wrap("densityDiag", alpha = 0.5)))+ggtitle("GGally for Weight vs Height")
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
